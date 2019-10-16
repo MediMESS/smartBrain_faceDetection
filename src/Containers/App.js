@@ -7,11 +7,24 @@ import FaceRecognition from '../Components/FaceRecognition/FaceRecognition';
 import Signin from '../Components/Signin/Signin';
 import Register from '../Components/Register/Register';
 import Particles from 'react-particles-js';
-import Clarifai from 'clarifai';
 import {particlesOptions} from '../Components/ParticlesOptions/ParticlesOptions';
 import './App.css';
 
-const app = new Clarifai.App({apiKey: '10d3b6cad7784da888c80248fa4f2bca'});
+
+const initialState = {
+  input:'',
+  imageUrl:'',
+  box: {},
+  route: 'home',
+  isSignedIn: false,
+  user: {
+    id: '',
+    name: '',
+    email: '',
+    nbEntries: 0,
+    joined: ''
+  }
+}
 class App extends Component{
   constructor() {
     super();
@@ -20,10 +33,28 @@ class App extends Component{
       imageUrl:'',
       box: {},
       route: 'home',
-      isSignedIn: false
-    };
+      isSignedIn: false,
+      user: {
+        id: '',
+        name: '',
+        email: '',
+        nbEntries: 0,
+        joined: ''
+      }
+    }
   }
 
+  loadUser = (userInfo) => {
+    this.setState({
+      user:{
+        id:userInfo.id,
+        name:userInfo.name,
+        email:userInfo.email,
+        nbEntries: userInfo.nbEntries,
+        joined: userInfo.joined
+      }
+    });
+  }
   onInputChange = (e) => {
     this.setState({input: e.target.value});
   }
@@ -45,28 +76,45 @@ class App extends Component{
     this.setState({box:faceBox});
   }
   onButtonSubmit = () => {
-    if(this.state.input!="")
-    {
-      this.setState({imageUrl: this.state.input});
-      app.models.predict(
-        Clarifai.FACE_DETECT_MODEL, this.state.input).then( (data) =>
-          {
-            this.setFaceBox(this.calculateFaceLocation(data))
-          }).catch(err => console.log(err));
-    }
+    this.setState({imageUrl: this.state.input});
+    fetch(('http://localhost:3000/imageurl'), {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        input: this.state.input
+      })
+    })
+    .then(response => response.json())
+    .then(response => {
+      if(response)
+      {
+        fetch(('http://localhost:3000/image'), {
+          method: 'put',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({id:this.state.user.id})
+        })
+        .then(response=>response.json())
+        .then(count => {
+            this.setState(Object.assign(this.state.user, {nbEntries: count}))
+        })
+        .catch(console.log)
+      }
+      this.setFaceBox(this.calculateFaceLocation(response));
+    })
+    .catch(err => console.log(err));
   }
 
   onRouteChange = (curr_route) => {
     this.setState({route: curr_route});
-    if (curr_route == "signOut")
-        this.setState({isSignedIn:true});
-    // reload the page when sign out
-    else if (curr_route == "quitSession")
+    if (curr_route === "signOut")
     {
       this.setState({isSignedIn:true});
-      window.location.reload();
     }
-
+    // reload the page when sign out
+    else if (curr_route === "quitSession")
+    {
+      this.setState(initialState);
+    }
     else
       this.setState({isSignedIn:false});
   }
@@ -80,16 +128,15 @@ class App extends Component{
             onRouteChange = {this.onRouteChange}
             isSignedIn = {this.state.isSignedIn} />
         {
-          console.log(this.state.isSignedIn), console.log(this.state.route),
-          this.state.route == "signIn" ?
-            <Signin onRouteChange={this.onRouteChange}/>
+          this.state.route === "signIn" ?
+            <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
             :
-            this.state.route == "register" ?
+            this.state.route === "register" ?
               <Register onRouteChange={this.onRouteChange}/>
               :
               <div>
                 <Logo />
-                <Rank />
+                <Rank currentUser={this.state.user}/>
                 <ImageLinkForm
                   onInputChange = {this.onInputChange}
                   onButtonSubmit = {this.onButtonSubmit} />

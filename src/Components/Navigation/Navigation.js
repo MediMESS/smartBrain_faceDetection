@@ -4,7 +4,7 @@ const Navigation = ({onRouteChange, isSignedIn}) => {
   if(isSignedIn){
     return (
       <div className="pa4 tr">
-        <a href="#" onClick={() => onRouteChange("home")} className="f3 link underline dim black">Sign Out</a>
+        <a href="#" onClick={() => onRouteChange("quitSession")} className="f3 link underline dim black">Sign Out</a>
       </div>
     );
   }
