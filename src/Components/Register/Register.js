@@ -25,7 +25,7 @@ class Register extends Component {
       alert("Empty Field, Please fill the empty field with you information");
       throw "Empty Field, Please fill the empty field with you information";
     }
-    fetch(('http://localhost:3000/register'), {
+    fetch(('https://immense-thicket-78677.herokuapp.com/register'), {
       method: 'post',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
