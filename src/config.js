@@ -1,3 +1,3 @@
 module.exports = {
-    SERVEUR_URL = "http://localhost:3000/",
-}
+  SERVEUR_URL: "http://localhost:3000/",
+};
