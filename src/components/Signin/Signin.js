@@ -19,6 +19,7 @@ class Signin extends React.Component {
   };
 
   onSubmitSignIn = () => {
+    console.log("GO TO SIGN IN");
     fetch(`${SERVEUR_URL}signin`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
