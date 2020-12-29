@@ -7,8 +7,8 @@ This is my Final Project i did of my Udemy Course, this course helped me to init
 
 **Picture** : https://www.headshotsprague.com/wp-content/uploads/2019/07/Headshots_Prague-emotional-portrait-of-a-smiling-entrepreneur-1.jpg
 
-
 **Course**: https://www.udemy.com/course/the-complete-web-developer-zero-to-mastery/
+
 **Demo**: https://smart-brain-ztm2019.herokuapp.com/
 
 # Install
